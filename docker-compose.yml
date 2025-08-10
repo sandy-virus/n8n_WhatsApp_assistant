@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  n8n_whatsapp_assistant:
+    image: n8nio/n8n:latest
+    container_name: n8n_whatsapp_assistant
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_COMMUNITY_PACKAGES_ALLOW=true
+      - N8N_EDITOR_BASE_URL=https://{you-ngrok-static-domain}
+      - WEBHOOK_URL=https://{you-ngrok-static-domain}
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      - NODE_VERSION=22.17.0
+      - YARN_VERSION=1.22.22
+      - NODE_ICU_DATA=/usr/local/lib/node_modules/full-icu
+      - NODE_ENV=production
+      - N8N_RELEASE_TYPE=stable
+      - SHELL=/bin/sh
+    volumes:
+      - ./n8n_data:/home/node/.n8n
+    restart: unless-stopped
+    entrypoint: ["tini", "--", "/docker-entrypoint.sh"]
+    networks:
+      - default
+
+    
