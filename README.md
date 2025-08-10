@@ -1,6 +1,58 @@
 # n8n_WhatsApp_assistant
 This project allows you to control your Google Drive directly from WhatsApp using Twilio Sandbox and n8n.   You can list, delete, move, and (in progress) summarize files by sending commands from WhatsApp.
 
+## 1) Prerequisites
+
+- Docker & Docker Compose installed  
+- ngrok account + authtoken
+
+  
+## 2) Step-by-step: Run n8n with Docker Compose
+
+1) **Clone/Make project folder**  
+   ```bash
+   mkdir n8n-workflow && cd n8n-workflow
+   ```
+2) **Create `.env` & `docker-compose.yml`** using the samples above.  
+3) **Start services**  
+   ```bash
+   docker compose up -d
+   docker compose logs -f n8n
+   ```
+4) **Open n8n editor**  
+   - Browser: `http://localhost:5678`  
+   - First time pe onboarding flow aayega; complete it.
+
+---
+
+## 3) Expose Local n8n to Internet via ngrok
+
+1) **Login & set authtoken** (one-time):
+   ```bash
+   ngrok config add-authtoken <YOUR_NGROK_AUTHTOKEN>
+   ```
+2) **Start tunnel**:
+   ```bash
+   ngrok http http://localhost:5678
+   ```
+3) **Copy the public URL** shown by ngrok (e.g., `https://abcd1234.ngrok.app`).  
+4) **Update `.env` → `WEBHOOK_URL`** with that ngrok URL:
+   ```ini
+   WEBHOOK_URL=https://abcd1234.ngrok.app
+   ```
+5) **Restart n8n container** so it picks new URL:
+   ```bash
+   docker compose restart n8n
+   ```
+
+## 4) Using Webhook Nodes (Important Difference)
+
+- **Production webhooks**:  
+  `https://<ngrok-domain>/webhook/<your-path>`  
+- **Editor/test webhooks** (Execute Node to test):  
+  `https://<ngrok-domain>/webhook-test/<your-path>`
+
+  
 ## 🚀 Features
 
 ### Implemented:
