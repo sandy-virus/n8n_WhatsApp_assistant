@@ -51,7 +51,58 @@ This project allows you to control your Google Drive directly from WhatsApp usin
   `https://<ngrok-domain>/webhook/<your-path>`  
 - **Editor/test webhooks** (Execute Node to test):  
   `https://<ngrok-domain>/webhook-test/<your-path>`
+## 5) Common Commands (Quality of Life)
 
+```bash
+# Start / Stop / Logs
+docker compose up -d
+docker compose down
+docker compose logs -f n8n
+
+# Restart after env change (e.g., WEBHOOK_URL)
+docker compose restart n8n
+
+# Update to latest n8n
+docker compose pull n8n && docker compose up -d
+
+# Debug shell inside container
+docker exec -it n8n sh
+```
+
+## 7) Troubleshooting
+
+- **ngrok URL **: URL change in Free plan.  
+  ✔️ `.env` change `WEBHOOK_URL` update → `docker compose restart n8n`  
+  ✔️ Use URL of external service (Twilio, etc.).
+
+- **Webhook hit problem**:  
+  ✔️ Check Webhook node **method (GET/POST)**.  
+  ✔️ External service set **same method**.  
+
+- **Google OAuth redirect error**:  
+  ✔️ Redirect URI must be exactly:  
+  `https://<your-ngrok-domain>/rest/oauth2-credential/callback`
+
+- **Security**:  
+  ✔️ `.env` ko git me push mat karo.  
+  ✔️ `N8N_ENCRYPTION_KEY` strong rakho.  
+  ✔️ Optionally enable `N8N_BASIC_AUTH_*` for editor.
+
+---
+## 8) Minimal Test Flow (Sanity Check)
+
+n8n editor me:
+
+1) New workflow → **Webhook** node
+   - HTTP Method: `POST`
+   - Path: `hello-test`
+2) **Set** node → Fixed message: `"Webhook received!"`
+3) Webhook → Set → **Respond to Webhook** (optional)  
+4) **Activate** workflow.  
+5) Hit webhook from terminal:
+   ```bash
+   curl -X POST https://<ngrok-domain>/webhook/hello-test -d '{"ping":"pong"}' -H "Content-Type: application/json"
+   ```
   
 ## 🚀 Features
 
